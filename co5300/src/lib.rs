@@ -108,7 +108,6 @@
 //! [`OutputPin`]: embedded_hal::digital::OutputPin
 
 #![deny(missing_docs)]
-#![deny(warnings)]
 #![no_std]
 #![forbid(unsafe_code)]
 // Enables the `doc_cfg` feature when the `docsrs` configuration attribute is defined.

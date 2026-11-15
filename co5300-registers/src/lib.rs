@@ -15,7 +15,6 @@
 //! - [`QspiInstruction`] lists the instruction codes of the Quad-SPI framing (section 5.2).
 
 #![deny(missing_docs)]
-#![deny(warnings)]
 #![no_std]
 #![forbid(unsafe_code)]
 // bitfield-struct generates `with_*_checked` setters that return `Result<_, ()>`.
