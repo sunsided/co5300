@@ -6,7 +6,7 @@ the [Rust example](../esp32c3): four color bars and a red-to-blue gradient. The 
 loaded from this repository's GitHub Release via the `dependencies` entry in
 `diagram.json`.
 
-Live project: <TODO>
+Live project: <https://wokwi.com/projects/480780994637021185>
 
 To recreate it on wokwi.com:
 
