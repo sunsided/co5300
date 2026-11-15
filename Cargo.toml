@@ -1,0 +1,29 @@
+[workspace]
+resolver = "3"
+members = ["co5300-registers", "co5300", "co5300-sim"]
+exclude = ["sim/wokwi-chip", "examples"]
+
+[workspace.package]
+version = "0.1.0"
+authors = ["Markus Mayer <widemeadows@gmail.com>"]
+license = "EUPL-1.2 OR MIT OR Apache-2.0"
+homepage = "https://github.com/sunsided/co5300"
+repository = "https://github.com/sunsided/co5300"
+edition = "2024"
+rust-version = "1.85"
+
+[workspace.dependencies]
+bitfield-struct = "0.13.0"
+defmt = "1.0.1"
+embedded-graphics-core = "0.4.1"
+embedded-hal = "1.0.0"
+embedded-hal-async = "1.0.0"
+embassy-futures = "0.1.2"
+fake-bus = "0.1.0"
+hardware-registers = { version = "0.4.0", default-features = false, features = ["spi"] }
+co5300-registers = { version = "0.1.0", path = "co5300-registers" }
+co5300-sim = { path = "co5300-sim" }
+
+[workspace.lints.clippy]
+# Modules live in `name.rs` plus `name/`, never in `name/mod.rs`.
+mod_module_files = "deny"
