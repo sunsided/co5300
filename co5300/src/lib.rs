@@ -33,7 +33,7 @@
 //! display.set_window(0, 0, 4, 2)?;
 //! display.write_pixels(&[0xF8, 0x00].repeat(8))?;
 //! # assert_eq!(model.borrow().pixel(3, 1), 0xFF0000);
-//! # Ok::<(), co5300::Error<co5300::SpiError<core::convert::Infallible, core::convert::Infallible>>>(())
+//! # Ok::<(), co5300::Error<co5300::SpiError<embedded_hal::spi::ErrorKind, core::convert::Infallible>>>(())
 //! ```
 //!
 //! ## Panel initialization
@@ -135,7 +135,7 @@ pub use co5300_registers::{
 
 use co5300_registers::prelude::*;
 use co5300_registers::{
-    AclControl, Brightness, ColorEnhance, Colmod, CommandPage, DeepStandby, HbmBrightness,
+    AclControl, Brightness, Colmod, ColorEnhance, CommandPage, DeepStandby, HbmBrightness,
     HbmControl, Page, SpiMode, TearingEffectOn,
 };
 use embedded_hal::delay::DelayNs;
@@ -341,7 +341,10 @@ impl<IFACE: Interface> Co5300<IFACE> {
     }
 
     /// Writes a single-parameter command, given as its register type.
-    pub fn write_register<R: WritableRegister>(&mut self, reg: R) -> Result<(), Error<IFACE::Error>> {
+    pub fn write_register<R: WritableRegister>(
+        &mut self,
+        reg: R,
+    ) -> Result<(), Error<IFACE::Error>> {
         self.write_command(R::COMMAND, &[reg.to_bits()])
     }
 
@@ -465,7 +468,11 @@ impl<IFACE: Interface> Co5300<IFACE> {
 
     /// Turns display inversion on (`INVON`, 21h) or off (`INVOFF`, 20h).
     pub fn set_inverted(&mut self, inverted: bool) -> Result<(), Error<IFACE::Error>> {
-        let command = if inverted { Command::INVON } else { Command::INVOFF };
+        let command = if inverted {
+            Command::INVON
+        } else {
+            Command::INVOFF
+        };
         self.write_command(command.code(), &[])
     }
 
@@ -476,9 +483,8 @@ impl<IFACE: Interface> Co5300<IFACE> {
         mode: Option<TearingEffect>,
     ) -> Result<(), Error<IFACE::Error>> {
         match mode {
-            Some(mode) => self.write_register(
-                TearingEffectOn::new().with_m(mode == TearingEffect::VAndHBlank),
-            ),
+            Some(mode) => self
+                .write_register(TearingEffectOn::new().with_m(mode == TearingEffect::VAndHBlank)),
             None => self.write_command(Command::TEOFF.code(), &[]),
         }
     }
@@ -492,7 +498,11 @@ impl<IFACE: Interface> Co5300<IFACE> {
     /// Enters (`IDMON`, 39h) or leaves (`IDMOFF`, 38h) Idle mode, where colors are reduced
     /// to the MSB of each channel.
     pub fn set_idle(&mut self, idle: bool) -> Result<(), Error<IFACE::Error>> {
-        let command = if idle { Command::IDMON } else { Command::IDMOFF };
+        let command = if idle {
+            Command::IDMON
+        } else {
+            Command::IDMOFF
+        };
         self.write_command(command.code(), &[])
     }
 

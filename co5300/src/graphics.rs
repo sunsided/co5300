@@ -19,8 +19,8 @@ use co5300_registers::AddressRange;
 use embedded_graphics_core::Pixel;
 use embedded_graphics_core::draw_target::DrawTarget;
 use embedded_graphics_core::geometry::{Dimensions, OriginDimensions, Size};
-use embedded_graphics_core::pixelcolor::raw::{RawData, RawU16};
 use embedded_graphics_core::pixelcolor::Rgb565;
+use embedded_graphics_core::pixelcolor::raw::{RawData, RawU16};
 use embedded_graphics_core::primitives::Rectangle;
 
 /// The most columns the chip drives (480 sources, datasheet section 1), plus the alignment

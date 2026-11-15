@@ -165,7 +165,10 @@ mod tests {
         );
         let quad = Frame::pixels(0x3C, PixelMode::Quad);
         assert_eq!(quad.header(), [0x32, 0x00, 0x3C, 0x00]);
-        assert_eq!((quad.address_lines, quad.data_lines), (Lines::Single, Lines::Quad));
+        assert_eq!(
+            (quad.address_lines, quad.data_lines),
+            (Lines::Single, Lines::Quad)
+        );
         let quad_addr = Frame::pixels(0x2C, PixelMode::QuadAddress);
         assert_eq!(quad_addr.instruction, 0x12);
         assert_eq!(quad_addr.address_lines, Lines::Quad);

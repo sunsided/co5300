@@ -5,12 +5,11 @@
 use crate::interface::AsyncInterface;
 use crate::{
     AclMode, Command, Config, CtrlDisplay, EnhancementLevel, Error, Madctl, PanelCommand,
-    PixelFormat, SLEEP_OUT_TO_DISPLAY_ON_MS, SLEEP_WAIT_MS, SOFTWARE_RESET_WAIT_MS,
-    TearingEffect,
+    PixelFormat, SLEEP_OUT_TO_DISPLAY_ON_MS, SLEEP_WAIT_MS, SOFTWARE_RESET_WAIT_MS, TearingEffect,
 };
 use co5300_registers::prelude::*;
 use co5300_registers::{
-    AclControl, Brightness, ColorEnhance, Colmod, CommandPage, DeepStandby, HbmBrightness,
+    AclControl, Brightness, Colmod, ColorEnhance, CommandPage, DeepStandby, HbmBrightness,
     HbmControl, Page, SpiMode, TearingEffectOn,
 };
 use embedded_hal::digital::OutputPin;
@@ -207,7 +206,11 @@ impl<IFACE: AsyncInterface> Co5300<IFACE> {
 
     /// See [`crate::Co5300::set_inverted`].
     pub async fn set_inverted(&mut self, inverted: bool) -> Result<(), Error<IFACE::Error>> {
-        let command = if inverted { Command::INVON } else { Command::INVOFF };
+        let command = if inverted {
+            Command::INVON
+        } else {
+            Command::INVOFF
+        };
         self.write_command(command.code(), &[]).await
     }
 
@@ -235,7 +238,11 @@ impl<IFACE: AsyncInterface> Co5300<IFACE> {
 
     /// See [`crate::Co5300::set_idle`].
     pub async fn set_idle(&mut self, idle: bool) -> Result<(), Error<IFACE::Error>> {
-        let command = if idle { Command::IDMON } else { Command::IDMOFF };
+        let command = if idle {
+            Command::IDMON
+        } else {
+            Command::IDMOFF
+        };
         self.write_command(command.code(), &[]).await
     }
 
@@ -270,6 +277,9 @@ impl<IFACE: AsyncInterface> Co5300<IFACE> {
 
     /// See [`crate::Co5300::write_pixels_continue`].
     pub async fn write_pixels_continue(&mut self, data: &[u8]) -> Result<(), Error<IFACE::Error>> {
-        Ok(self.iface.write_pixels(Command::RAMWRC.code(), data).await?)
+        Ok(self
+            .iface
+            .write_pixels(Command::RAMWRC.code(), data)
+            .await?)
     }
 }

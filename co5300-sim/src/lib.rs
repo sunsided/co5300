@@ -58,9 +58,9 @@ pub use bus::{FakeDc, FakeDelay, FakeReset, FakeSpi};
 use alloc::vec;
 use alloc::vec::Vec;
 use co5300_registers::{
-    AclControl, AddressRange, Brightness, ColorEnhance, Colmod, Command, CommandPage,
-    CtrlDisplay, DeepStandby, HbmBrightness, HbmControl, Madctl, PixelFormat, QspiInstruction,
-    SpiMode, TearingEffectOn,
+    AclControl, AddressRange, Brightness, Colmod, ColorEnhance, Command, CommandPage, CtrlDisplay,
+    DeepStandby, HbmBrightness, HbmControl, Madctl, PixelFormat, QspiInstruction, SpiMode,
+    TearingEffectOn,
 };
 
 const MS: u64 = 1_000_000;
@@ -235,8 +235,9 @@ impl Co5300Model {
             pending: Vec::new(),
             now_ns: 0,
             reset_low_since: None,
-            busy_until: 0,
-            sleep_out_from: 0,
+            // Created as if `RESX` was just released (section 6.6, note 5).
+            busy_until: 5 * MS,
+            sleep_out_from: 120 * MS,
             display_on_from: 0,
             sleep_in_from: 0,
             log: Vec::new(),
@@ -281,7 +282,11 @@ impl Co5300Model {
                 self.reset_low_since = None;
                 let low_ns = self.now_ns - since;
                 // Deep standby needs a pulse of more than 3 ms (section 7.5.37).
-                let needed = if self.state.deep_standby { 3 * MS } else { 10_000 };
+                let needed = if self.state.deep_standby {
+                    3 * MS
+                } else {
+                    10_000
+                };
 
                 if low_ns >= needed {
                     self.reset();
@@ -731,8 +736,8 @@ fn expected_params(command: u8) -> Option<usize> {
         | DISPOFF | DISPON | TEOFF | IDMOFF | IDMON => 0,
         CASET | RASET | PTLAR | PTLAR_H => 4,
         STESL => 2,
-        TEON | MADCTL | COLMOD | DSTBON | WRDISBV | WRCTRLD | WRACL | WRIMGEHCCTR
-        | WRHBMDISBV | HBMCTL | SETSPIMODE | PAGESEL | SETDISPMODE | COLOPT => 1,
+        TEON | MADCTL | COLMOD | DSTBON | WRDISBV | WRCTRLD | WRACL | WRIMGEHCCTR | WRHBMDISBV
+        | HBMCTL | SETSPIMODE | PAGESEL | SETDISPMODE | COLOPT => 1,
         _ => return None,
     })
 }
@@ -755,7 +760,10 @@ mod tests {
         assert!(model.is_sleeping());
         assert!(!model.is_display_on());
         assert_eq!(u8::from(model.colmod()), 0x77);
-        assert_eq!(model.window(), (AddressRange::DEFAULT, AddressRange::DEFAULT));
+        assert_eq!(
+            model.window(),
+            (AddressRange::DEFAULT, AddressRange::DEFAULT)
+        );
         assert_eq!(model.visible_pixel(0, 0), 0);
     }
 
@@ -876,7 +884,7 @@ mod tests {
         model.spi_deselect();
         assert!(model.is_display_on(), "commands are ignored");
         model.set_reset_pin(false);
-        model.advance_ns(1 * MS);
+        model.advance_ns(MS);
         model.set_reset_pin(true);
         assert!(model.is_deep_standby());
         model.set_reset_pin(false);
@@ -905,7 +913,9 @@ mod tests {
         assert_eq!(model.commands(), [0x11, 0x3A, 0x2A, 0x2B, 0x2C]);
 
         model.spi_select();
-        [0x32, 0x00, 0x2C, 0x00].iter().for_each(|&b| model.spi_byte(b));
+        [0x32, 0x00, 0x2C, 0x00]
+            .iter()
+            .for_each(|&b| model.spi_byte(b));
         model.spi_deselect();
         assert_eq!(model.violations(), [Violation::InvalidFrame]);
     }
