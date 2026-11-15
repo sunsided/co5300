@@ -1,0 +1,45 @@
+[package]
+name = "co5300"
+description = "A platform-agnostic, transport-agnostic driver for the Chipone CO5300 AMOLED display controller"
+categories = ["embedded", "hardware-support", "no-std"]
+keywords = ["embedded-hal-driver", "co5300", "amoled", "display", "qspi"]
+readme = "README.md"
+# The tests need the unpublished co5300-sim crate.
+exclude = ["tests/"]
+version.workspace = true
+authors.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[lints]
+workspace = true
+
+[features]
+async = ["dep:embedded-hal-async"]
+defmt = ["dep:defmt", "co5300-registers/defmt"]
+embedded-graphics = ["dep:embedded-graphics-core"]
+
+[dependencies]
+co5300-registers.workspace = true
+defmt = { workspace = true, optional = true }
+embedded-graphics-core = { workspace = true, optional = true }
+embedded-hal.workspace = true
+embedded-hal-async = { workspace = true, optional = true }
+
+[dev-dependencies]
+co5300-sim.workspace = true
+embassy-futures.workspace = true
+embedded-graphics-core.workspace = true
+embedded-hal-async.workspace = true
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[package.metadata.release]
+pre-release-replacements = [
+    { file = "CHANGELOG.md", search = "## \\[Unreleased\\]", replace = "## [Unreleased]\n\n## [{{version}}] - {{date}}\n\n[{{version}}]: https://github.com/sunsided/co5300/releases/tag/v{{version}}", exactly = 1 },
+]
