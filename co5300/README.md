@@ -43,6 +43,28 @@ writes through the interface, a window and a contiguous fill at a time, with no 
 buffer in the host. The chip only accepts windows with an even start and length, so
 unaligned areas are widened by one pixel with their edge pixels repeated.
 
+Text, lines and outlines draw single pixels through `draw_iter`, and each one becomes a
+2 × 2 block costing three bus transfers, so they come out smeared and slow. Draw them into
+an `embedded-graphics` `Framebuffer` instead, the whole display or a band of rows, and
+blit it with one aligned `fill_contiguous`, which is exact and fast. `Image` over
+`Framebuffer::as_image` does that:
+
+```rust,ignore
+use embedded_graphics::framebuffer::{Framebuffer, buffer_size};
+use embedded_graphics::image::Image;
+use embedded_graphics::mono_font::{MonoTextStyle, ascii::FONT_6X10};
+use embedded_graphics::pixelcolor::{Rgb565, raw::{BigEndian, RawU16}};
+use embedded_graphics::prelude::*;
+use embedded_graphics::text::Text;
+
+// A 120 x 20 band: even size and even position keep the blit exact.
+type Band = Framebuffer<Rgb565, RawU16, BigEndian, 120, 20, { buffer_size::<Rgb565>(120, 20) }>;
+let mut band = Band::new();
+let style = MonoTextStyle::new(&FONT_6X10, Rgb565::WHITE);
+Text::new("Hello", Point::new(2, 14), style).draw(&mut band).unwrap(); // Infallible
+Image::new(&band.as_image(), Point::new(40, 100)).draw(&mut display)?; // one fill_contiguous
+```
+
 ## Implemented so far
 
 - Hardware reset with datasheet timing, and initialization: panel commands, user command

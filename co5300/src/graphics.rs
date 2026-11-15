@@ -5,6 +5,34 @@
 //! The host keeps no frame buffer. The target needs the RGB565 pixel format, which
 //! [`Co5300::init`] selects by default.
 //!
+//! ## Text and lines
+//!
+//! Text, lines and outlines draw single pixels through
+//! [`draw_iter`](DrawTarget::draw_iter), and each one becomes a 2 × 2 block costing three bus
+//! transfers, so they come out smeared and slow. Draw them into an `embedded-graphics`
+//! [`Framebuffer`] instead, the whole display or a band of rows, and blit it with one
+//! aligned [`fill_contiguous`](DrawTarget::fill_contiguous), which is exact and fast.
+//! `Image` over [`Framebuffer::as_image`] does that:
+//!
+//! ```rust,ignore
+//! use embedded_graphics::framebuffer::{Framebuffer, buffer_size};
+//! use embedded_graphics::image::Image;
+//! use embedded_graphics::mono_font::{MonoTextStyle, ascii::FONT_6X10};
+//! use embedded_graphics::pixelcolor::{Rgb565, raw::{BigEndian, RawU16}};
+//! use embedded_graphics::prelude::*;
+//! use embedded_graphics::text::Text;
+//!
+//! // A 120 x 20 band: even size and even position keep the blit exact.
+//! type Band = Framebuffer<Rgb565, RawU16, BigEndian, 120, 20, { buffer_size::<Rgb565>(120, 20) }>;
+//! let mut band = Band::new();
+//! let style = MonoTextStyle::new(&FONT_6X10, Rgb565::WHITE);
+//! Text::new("Hello", Point::new(2, 14), style).draw(&mut band).unwrap(); // Infallible
+//! Image::new(&band.as_image(), Point::new(40, 100)).draw(&mut display)?; // one fill_contiguous
+//! ```
+//!
+//! [`Framebuffer`]: https://docs.rs/embedded-graphics/0.8/embedded_graphics/framebuffer/struct.Framebuffer.html
+//! [`Framebuffer::as_image`]: https://docs.rs/embedded-graphics/0.8/embedded_graphics/framebuffer/struct.Framebuffer.html#method.as_image
+//!
 //! ## Alignment
 //!
 //! The chip accepts only windows with an even start and an even length, in both directions
