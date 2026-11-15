@@ -61,7 +61,10 @@ impl Chip {
 
     /// Copies the changed part of the panel into the frame buffer as RGBA.
     fn render(&mut self) {
-        let Some(region) = self.model.take_dirty() else {
+        let dirty = self.model.take_dirty();
+        // Nothing here reads the command log or the violations; drop them so memory stays flat.
+        self.model.clear_log();
+        let Some(region) = dirty else {
             return;
         };
 
