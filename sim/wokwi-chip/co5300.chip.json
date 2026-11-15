@@ -1,0 +1,7 @@
+{
+  "name": "co5300",
+  "author": "Markus Mayer",
+  "pins": ["VDDI", "GND", "CSX", "SCL", "SDI", "DCX", "RESX"],
+  "controls": [],
+  "display": { "width": 410, "height": 502 }
+}

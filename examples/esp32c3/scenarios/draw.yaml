@@ -1,0 +1,11 @@
+name: Init and test pattern
+version: 1
+author: Markus Mayer
+
+steps:
+  - wait-serial: 'CO5300 init ok'
+  - wait-serial: 'CO5300 frame drawn'
+  # The color bars and the gradient, as the panel shows them (410 x 502).
+  - take-screenshot:
+      part-id: lcd1
+      compare-with: screenshots/test-pattern.png

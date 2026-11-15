@@ -1,0 +1,22 @@
+[package]
+name = "co5300-wokwi-chip"
+description = "Wokwi custom chip with a frame buffer, wrapping the co5300-sim command-level model"
+version = "0.1.0"
+license = "EUPL-1.2 OR MIT OR Apache-2.0"
+edition = "2024"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+co5300-sim = { path = "../../co5300-sim" }
+wokwi_chip_ll = "0.2.0"
+
+[profile.release]
+opt-level = "s"
+lto = true
+
+[lints.clippy]
+# Modules live in `name.rs` plus `name/`, never in `name/mod.rs`.
+mod_module_files = "deny"

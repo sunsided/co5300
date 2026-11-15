@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "author": "Markus Mayer",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-c3-devkitm-1", "id": "esp", "top": 0, "left": 0, "attrs": {} },
+    { "type": "chip-co5300", "id": "lcd1", "top": -120, "left": 220, "attrs": {} }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "esp:3V3.1", "lcd1:VDDI", "red", [] ],
+    [ "esp:GND.1", "lcd1:GND", "black", [] ],
+    [ "esp:4", "lcd1:SCL", "blue", [] ],
+    [ "esp:5", "lcd1:SDI", "green", [] ],
+    [ "esp:6", "lcd1:CSX", "orange", [] ],
+    [ "esp:7", "lcd1:DCX", "purple", [] ],
+    [ "esp:10", "lcd1:RESX", "gray", [] ]
+  ],
+  "dependencies": {}
+}

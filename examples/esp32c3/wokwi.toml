@@ -1,0 +1,8 @@
+[wokwi]
+version = 1
+elf = "target/riscv32imc-unknown-none-elf/release/co5300-example-esp32c3"
+firmware = "target/riscv32imc-unknown-none-elf/release/co5300-example-esp32c3"
+
+[[chip]]
+name = "co5300"
+binary = "../../sim/wokwi-chip/co5300.chip.wasm"
