@@ -113,8 +113,9 @@ pub use types::*;
 /// The register address is the command code; the value is the parameter byte.
 pub trait Register: prelude::SPIRegister8 {
     /// The command code that carries this register.
-    const COMMAND: u8 = <Self as prelude::SPIRegister<prelude::RegisterAddress8, prelude::R1>>::REGISTER_ADDRESS
-        .into_inner();
+    const COMMAND: u8 =
+        <Self as prelude::SPIRegister<prelude::RegisterAddress8, prelude::R1>>::REGISTER_ADDRESS
+            .into_inner();
 }
 
 /// A register that can be decoded from its parameter byte.

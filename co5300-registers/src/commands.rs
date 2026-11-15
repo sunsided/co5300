@@ -327,7 +327,10 @@ mod tests {
         assert!(!AddressRange::new(1, 2).is_valid(), "odd start");
         assert!(!AddressRange::new(0, 2).is_valid(), "odd length");
         assert!(!AddressRange::new(4, 1).is_valid(), "start after end");
-        assert!(!AddressRange::new(0, 0x400 - 1 + 2).is_valid(), "beyond 10 bits");
+        assert!(
+            !AddressRange::new(0, 0x400 - 1 + 2).is_valid(),
+            "beyond 10 bits"
+        );
         assert_eq!(AddressRange::new(2, 409).len(), 408);
     }
 
