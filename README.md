@@ -71,6 +71,9 @@ over 4-wire SPI since Wokwi has no Quad-SPI. The ESP32-C3 firmware in `examples/
 draws a test pattern; its scenario checks the serial output and compares the chip's
 display with a reference screenshot using `wokwi-cli`.
 
+**[Try it in the browser](https://wokwi.com/projects/480780994637021185)**: an ESP32-C3 drawing a test
+pattern on the emulated CO5300 on wokwi.com; the chip shows its frame buffer as a display.
+
 ### Use the chip in your own Wokwi project
 
 Every [GitHub Release](https://github.com/sunsided/co5300/releases) carries the chip as
