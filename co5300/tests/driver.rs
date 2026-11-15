@@ -266,4 +266,40 @@ mod asynch {
         assert_clean(&model);
         assert!(model.borrow().is_idle());
     }
+
+    #[test]
+    fn async_sleep_brightness_and_window() {
+        let model = RefCell::new(Co5300Model::new(8, 8));
+        let mut delay = FakeDelay::new(&model);
+        let iface = SpiInterface::new(FakeSpi::new(&model), FakeDc::new(&model));
+        let mut display = Co5300::new(iface, Config::new(8, 8));
+
+        block_on(async {
+            co5300::asynch::reset(&mut FakeReset::new(&model), &mut delay)
+                .await
+                .unwrap();
+            display.init(&mut delay, &[]).await.unwrap();
+            // SLPIN may follow SLPOUT only after 120 ms.
+            embedded_hal_async::delay::DelayNs::delay_ms(&mut delay, 120).await;
+            display.sleep_in(&mut delay).await.unwrap();
+            assert!(model.borrow().is_sleeping());
+            display.sleep_out(&mut delay).await.unwrap();
+            assert!(!model.borrow().is_sleeping());
+            display.set_brightness(0x42).await.unwrap();
+            assert_eq!(
+                display.set_window(1, 0, 2, 2).await,
+                Err(Error::InvalidWindow)
+            );
+            display.set_window(2, 4, 4, 2).await.unwrap();
+        });
+        assert_clean(&model);
+
+        let m = model.borrow();
+        assert_eq!(m.brightness(), 0x42);
+        let (columns, rows) = m.window();
+        assert_eq!(
+            (columns.start, columns.end, rows.start, rows.end),
+            (2, 5, 4, 5)
+        );
+    }
 }

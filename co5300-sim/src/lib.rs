@@ -316,6 +316,13 @@ impl Co5300Model {
         &self.violations
     }
 
+    /// Clears the [`commands`](Self::commands) and [`violations`](Self::violations) logs,
+    /// so a long-running host that never reads them keeps a flat memory footprint.
+    pub fn clear_log(&mut self) {
+        self.log.clear();
+        self.violations.clear();
+    }
+
     /// The pixel in frame memory at panel position `(x, y)`, as `0x00RRGGBB`.
     pub fn pixel(&self, x: u16, y: u16) -> u32 {
         self.memory[usize::from(y) * usize::from(self.width) + usize::from(x)]
@@ -752,6 +759,19 @@ mod tests {
         model.advance_ns(60 * MS);
         model.execute(0x3A, &[0x55]);
         model.execute(0x29, &[]);
+    }
+
+    #[test]
+    fn clear_log_empties_commands_and_violations() {
+        let mut model = Co5300Model::new(4, 4);
+        // SLPOUT right after reset breaks the 120 ms rule.
+        model.execute(0x11, &[]);
+        assert!(!model.commands().is_empty());
+        assert!(!model.violations().is_empty());
+
+        model.clear_log();
+        assert!(model.commands().is_empty());
+        assert!(model.violations().is_empty());
     }
 
     #[test]
